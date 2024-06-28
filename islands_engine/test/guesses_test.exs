@@ -10,8 +10,8 @@ defmodule IslandsEngineTest.GuessesTest do
 
     guesses =
       Guesses.new()
-      |> Guesses.add_hit(c1)
-      |> Guesses.add_hit(c1)
+      |> Guesses.add(:hit, c1)
+      |> Guesses.add(:hit, c1)
 
     assert guesses == %Guesses{hits: MapSet.new([c1]), misses: MapSet.new()}
   end
@@ -21,8 +21,8 @@ defmodule IslandsEngineTest.GuessesTest do
 
     guesses =
       Guesses.new()
-      |> Guesses.add_miss(c1)
-      |> Guesses.add_miss(c1)
+      |> Guesses.add(:miss, c1)
+      |> Guesses.add(:miss, c1)
 
     assert guesses == %Guesses{hits: MapSet.new(), misses: MapSet.new([c1])}
   end
