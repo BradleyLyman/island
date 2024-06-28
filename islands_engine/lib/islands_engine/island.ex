@@ -25,6 +25,11 @@ defmodule IslandsEngine.Island do
     end
   end
 
+  @spec overlaps?(t(), t()) :: boolean()
+  def overlaps?(existing, other) do
+    not MapSet.disjoint?(existing.coordinates, other.coordinates)
+  end
+
   #############################################################################
   ## Private API
   #############################################################################

@@ -9,6 +9,18 @@ defmodule IslandsEngineTest.IslandTest do
     coordinate
   end
 
+  test "overlapping islands should indicate that they're overlapping" do
+    assert {:ok, existing} = Island.new(:square, c(1, 1))
+    assert {:ok, other} = Island.new(:square, c(2, 1))
+    assert Island.overlaps?(existing, other)
+  end
+
+  test "disjoint islands should not indicate that they're overlapping" do
+    assert {:ok, existing} = Island.new(:square, c(1, 1))
+    assert {:ok, other} = Island.new(:square, c(3, 1))
+    assert not Island.overlaps?(existing, other)
+  end
+
   test "square island" do
     assert {:ok, %Island{coordinates: coords}} = Island.new(:square, c(1, 1))
 
