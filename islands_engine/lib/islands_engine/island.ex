@@ -26,8 +26,25 @@ defmodule IslandsEngine.Island do
   end
 
   @spec overlaps?(t(), t()) :: boolean()
-  def overlaps?(existing, other) do
+  def overlaps?(%Island{} = existing, %Island{} = other) do
     not MapSet.disjoint?(existing.coordinates, other.coordinates)
+  end
+
+  @spec guess(t(), Coordinate.t()) :: {:hit, t()} | :miss
+  def guess(%Island{} = island, %Coordinate{} = coordinate) do
+    case MapSet.member?(island.coordinates, coordinate) do
+      true ->
+        hit_coordinates = MapSet.put(island.hit_coordinates, coordinate)
+        {:hit, %{island | hit_coordinates: hit_coordinates}}
+
+      false ->
+        :miss
+    end
+  end
+
+  @spec forested?(t()) :: boolean()
+  def forested?(%Island{} = island) do
+    MapSet.equal?(island.coordinates, island.hit_coordinates)
   end
 
   #############################################################################
@@ -37,7 +54,7 @@ defmodule IslandsEngine.Island do
   @spec generate_coordinates(list({integer(), integer()}), Coordinate.t()) ::
           Coordinate.set()
           | {:error, :invalid_coordinate}
-  defp generate_coordinates(offsets, upper_left) do
+  defp generate_coordinates(offsets, %Coordinate{} = upper_left) do
     Enum.reduce_while(offsets, MapSet.new(), fn offset, coordinates ->
       coordinates |> put_with_offset(upper_left, offset)
     end)

@@ -21,6 +21,41 @@ defmodule IslandsEngineTest.IslandTest do
     assert not Island.overlaps?(existing, other)
   end
 
+  test "a guess that hits an island should add to hit coordinates" do
+    assert {:ok, %Island{} = island} = Island.new(:square, c(1, 1))
+    assert {:hit, island} = Island.guess(island, c(2, 2))
+    assert MapSet.equal?(island.hit_coordinates, MapSet.new([c(2, 2)]))
+  end
+
+  test "a guess that misses an island should not add to hit coordinates" do
+    assert {:ok, %Island{} = island} = Island.new(:square, c(1, 1))
+    assert :miss = Island.guess(island, c(3, 3))
+    assert MapSet.equal?(island.hit_coordinates, MapSet.new([]))
+  end
+
+  test "forested? should be false when hits and coordinates do not match" do
+    assert {:ok, %Island{} = island} = Island.new(:square, c(1, 1))
+    assert not Island.forested?(island)
+
+    assert {:hit, island} = Island.guess(island, c(1, 1))
+    assert not Island.forested?(island)
+
+    assert {:hit, island} = Island.guess(island, c(2, 1))
+    assert not Island.forested?(island)
+
+    assert {:hit, island} = Island.guess(island, c(1, 2))
+    assert not Island.forested?(island)
+  end
+
+  test "forested? should be true when hits and coordinates match" do
+    assert {:ok, %Island{} = island} = Island.new(:square, c(1, 1))
+    assert {:hit, island} = Island.guess(island, c(1, 1))
+    assert {:hit, island} = Island.guess(island, c(2, 1))
+    assert {:hit, island} = Island.guess(island, c(1, 2))
+    assert {:hit, island} = Island.guess(island, c(2, 2))
+    assert Island.forested?(island)
+  end
+
   test "square island" do
     assert {:ok, %Island{coordinates: coords}} = Island.new(:square, c(1, 1))
 
